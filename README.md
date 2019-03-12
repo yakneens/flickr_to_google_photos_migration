@@ -141,3 +141,8 @@ Not sure how it will behave on Windows.
 
 
 
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/badge.svg?style=beer-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration)  [![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/make-wish.svg?style=flat-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration?focus=wish)
