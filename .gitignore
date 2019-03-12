@@ -1,0 +1,7 @@
+auth/*
+photos_to_move.pickle
+celery/out/*
+celery/processed/*
+celery/results/*
+__pycache__/*
+.idea/*
