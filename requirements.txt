@@ -1,0 +1,10 @@
+google-api-python-client
+google-auth
+google-auth-httplib2
+httplib2
+oauth2client
+urllib3
+requests
+celery
+tornado>=4.2.0,<6.0.0
+flickr-api

@@ -10,7 +10,7 @@ my_photos = []
 flickr_api.set_keys(api_key=os.environ['FLICKR_API_KEY'], api_secret=os.environ['FLICKR_API_SECRET'])
 
 counter = 0
-flickr_api.set_auth_handler((Path().parent / "auth/auth_handler").resolve().as_posix())
+flickr_api.set_auth_handler((Path().parent / "auth/flickr_auth_handler").resolve().as_posix())
 user = flickr_api.test.login()
 #photosets = user.getPhotosets()
 
