@@ -1,9 +1,10 @@
-#Migrating your Flickr photo library to Google Photos
+# Migrating your Flickr photo library to Google Photos
 This set of scripts can help you migrate your Flickr photo collection over to Google Photos. It uses the Flickr API and 
 Google API to exchange information and mirror the structure of your Flickr albums on Google Photos. The scripts are
 written in Python and make use of the [python-flickr-api](https://github.com/alexis-mignon/python-flickr-api) library 
 by @alexis-mignon. These scripts were built for python 3+.
 
+### Installation
 Begin by cloning this repo to your local machine:
 
 ```git clone https://github.com/llevar/flickr_to_google_photos_migration```
@@ -24,6 +25,7 @@ mkdir -p celery/processed
 mkdir -p celery/results 
 ```
 
+### Authentication and Authorization
 You now want to authenticate with the Flickr API. It's best to follow this 
 [guide](https://github.com/alexis-mignon/python-flickr-api/wiki/Flickr-API-Keys-and-Authentication). You want to save 
 the resulting authentication handler into ```auth/flickr_auth_handler```. The script ```build_flickr_verifier.py``` has
@@ -56,6 +58,8 @@ Place this file under ```auth/google_credentials.json```
 Because one can have many thousands of photos in their library and errors may occur when communicating with either
 Flickr or Google Photos, we will carry out the migration process in several steps so that it can be restarted if it fails.
 
+### Building a list of photos to migrate
+
 The first step is to build a file containing a list of URLs and titles of all your photos, as well as the album they 
 belong to. These scripts currently assume that all of your photos are stored in albums. They walk through all of your
 albums and make a list of the photos in each album. If your photos are not in any albums they will not be captured by
@@ -78,6 +82,8 @@ list of photos. If the script fails, it will need to start over. Perhaps in a la
 capability. Since the script doesn't actually download any data, but only builds a list of photo URLs, there is a
 reasonable expectation that it should succeed even on a large library of photos (tested on tens of thousands of photos).
 
+
+### Creating migration tasks
 To manage the orderly download/upload of photos between providers, and allow one to stop and resume the process we will
 be using [Celery](https://github.com/celery/celery), which is a python queue-based task manager. Celery supports many
 options, including different message brokers, parallelization of tasks via multiple workers and worker concurrency and
@@ -101,6 +107,8 @@ to an album that it did not create. Thus, you shouldn't have any existing albums
 name with albums on Flickr, otherwise there will be a collision and photos may not get uploaded. Once a suitable album
 is located on the Google side, the task will download a photo from Flickr using its "Original" size and will upload
 it to the respective album on Google Photos.
+
+### Running the migration
 
 In order to start the actual processing of tasks you need to start celery. Do this with the following command from the 
 root directory of the git repo:
