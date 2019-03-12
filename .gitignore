@@ -5,3 +5,4 @@ celery/processed/*
 celery/results/*
 __pycache__/*
 .idea/*
+google_test.py
