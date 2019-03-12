@@ -135,14 +135,9 @@ space, stop celery, reclaim the space, then resume the migration on the next day
 Enjoy!
 
 P.S. This software has been tested on Mac OS and CentOS. It will probably work on other Linux flavors.
-Not sure how it will behave on Windows.
+Not sure how it will behave on Windows. There is currently very little error handling code. Your contributions are 
+welcome.
 
 
-
-
-
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
+##### Support on Beerpay
 [![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/badge.svg?style=beer-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration)  [![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/make-wish.svg?style=flat-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration?focus=wish)
