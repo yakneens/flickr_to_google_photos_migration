@@ -118,9 +118,11 @@ celery -A celery_migration_app worker --loglevel=debug --concurrency=1 -E
 ```  
 
 This starts a single worker with a concurrency of 1, meaning that only one task will be processed at a time. Celery will
-grab task definitions from ```celery/out``` and process them. The results will be stored in ```celery/results``` where 
+grab task definitions from ```celery/out``` and process them. Processed tasks will end up in ```celerey/processed```.
+The results will be stored in ```celery/results``` where 
 you can look at their status. You can start and stop Celery as many times as you want and it will pick up from where it
-left off. After a few hours your library should hopefully be migrated over to Google Photos.
+left off. You can get a quick summary of your successes and failures by running ```python check_migration_status.py```.
+After a few hours your library should hopefully be migrated over to Google Photos.
 
 N.B. Another current limitation of the Google Photos API is that all files are uploaded in their original size, even if
 you have selected the "High Quality" version of Google Photos that shouldn't count towards your Google Drive storage. 
@@ -131,6 +133,10 @@ Storage' to force the conversion of all of your photos to their 'High Quality' s
 catch is that you can only trigger this process once per day. So if you are hurting for space (or don't want to spend
 any money on a bigger storage allocation for a month) you can run migration for a while, until you start running out of 
 space, stop celery, reclaim the space, then resume the migration on the next day, and so on...
+
+N.B. #2 It looks like the Google Photos API currently has a 10000 request 
+[daily limit](https://developers.google.com/photos/library/guides/api-limits-quotas). You should keep an eye on this 
+and stop the migration before you hit the quota as you will otherwise get task failures.
 
 Enjoy!
 

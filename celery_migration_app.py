@@ -4,13 +4,14 @@ from pathlib import Path
 
 app = Celery(__name__)
 app.conf.update({
-    'result_backend': f'file://{(Path().parent / "celery/results").resolve().as_posix()}',
+    'result_backend': f'file://{(Path.cwd() / "celery" / "results").resolve().as_posix()}',
     'broker_url': 'filesystem://',
     'broker_transport_options': {
         'data_folder_in': 'celery/out',
         'data_folder_out': 'celery/out',
         'data_folder_processed': 'celery/processed',
-        'processed_folder': 'celery/processed'
+        'processed_folder': 'celery/processed',
+        'store_processed': True
     },
     'imports': ('celery_migration_app',),
     'result_persistent': True,
