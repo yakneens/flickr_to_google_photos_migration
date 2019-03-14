@@ -1,4 +1,7 @@
 # Migrating your Flickr photo library to Google Photos
+
+![Feels good](flickr_to_google_photos_migration.png)
+
 This set of scripts can help you migrate your Flickr photo collection over to Google Photos. It uses the Flickr API and 
 Google API to exchange information and mirror the structure of your Flickr albums on Google Photos. The scripts are
 written in Python and make use of the [python-flickr-api](https://github.com/alexis-mignon/python-flickr-api) library 
