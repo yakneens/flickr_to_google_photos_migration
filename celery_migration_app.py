@@ -22,7 +22,7 @@ app.conf.update({
     'accept_content': ['json']})
 
 
-@app.task(autoretry_for=(RequestException,HttpError), retry_backoff=True)
+@app.task(autoretry_for=(RequestException, HttpError), retry_backoff=True)
 def migrate_photo(photo_title, photo_url, album_title):
     google_creds = authorize_with_google()
     service = get_google_photos_service(google_creds)
