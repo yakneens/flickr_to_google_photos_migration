@@ -26,6 +26,9 @@ for photo_set in photo_set_walker:
         except flickr_api.flickrerrors.FlickrServerError as e:
             print(f"Couldn't get original size URL {e}. Skipping")
             continue
+        except flickr_api.flickrerrors.FlickrError as e:
+            print(f"Couldn't get original size URL {e}. Skipping")
+            continue
 
         my_photos.append({"album": photo_set['title'],
                           "photoId": photo['id'],
