@@ -1,6 +1,8 @@
 from celery import Celery
 from migration_util import *
 from pathlib import Path
+from requests.exceptions import RequestException
+from googleapiclient.errors import HttpError
 
 app = Celery(__name__)
 app.conf.update({
@@ -20,7 +22,7 @@ app.conf.update({
     'accept_content': ['json']})
 
 
-@app.task
+@app.task(autoretry_for=(RequestException,HttpError), retry_backoff=True)
 def migrate_photo(photo_title, photo_url, album_title):
     google_creds = authorize_with_google()
     service = get_google_photos_service(google_creds)
