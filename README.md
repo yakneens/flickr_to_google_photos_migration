@@ -58,10 +58,17 @@ that looks like this:
 
 Place this file under ```auth/google_credentials.json```
 
-Because one can have many thousands of photos in their library and errors may occur when communicating with either
-Flickr or Google Photos, we will carry out the migration process in several steps so that it can be restarted if it fails.
+Now that Google authentication is complete, setup Google authorization by running the [oauth.py](oauth.py) script:
+
+    python oauth.py
+    
+An authorization server page will be opened in your default browser.  Follow the prompts to grant the migration
+script access to your photos.  When successful, an additional file, ```auth/google_token.json``` will be created.
 
 ### Building a list of photos to migrate
+
+Because one can have many thousands of photos in their library and errors may occur when communicating with either
+Flickr or Google Photos, we will carry out the migration process in several steps so that it can be restarted if it fails.
 
 The first step is to build a file containing a list of URLs and titles of all your photos, as well as the album they 
 belong to. These scripts currently assume that all of your photos are stored in albums. They walk through all of your
@@ -110,6 +117,7 @@ to an album that it did not create. Thus, you shouldn't have any existing albums
 name with albums on Flickr, otherwise there will be a collision and photos may not get uploaded. Once a suitable album
 is located on the Google side, the task will download a photo from Flickr using its "Original" size and will upload
 it to the respective album on Google Photos.
+
 
 ### Running the migration
 
