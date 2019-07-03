@@ -6,3 +6,5 @@ __pycache__/*
 google_test.py
 venv/
 flickr.sh
+photosets-complete/
+photosets-queue/
