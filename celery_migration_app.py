@@ -21,17 +21,21 @@ app.conf.update({
     'result_serializer': 'json',
     'accept_content': ['json']})
 
+r = redis.Redis(host='0.0.0.0', port=6379, db=0, decode_responses=True)
 
-@app.task(autoretry_for=(RequestException, HttpError), retry_backoff=True)
-def migrate_photo(photo_title, photo_url, album_title):
+
+@app.task(autoretry_for=(RequestException, HttpError),
+          retry_backoff=True,
+          retry_kwargs={'max_retries': 20})
+def migrate_photo(photo_title, photo_url, album_title, photo_tags):
     google_creds = authorize_with_google()
     service = get_google_photos_service(google_creds)
 
-    album_id = find_album_on_google(service, album_title)
-
-    if album_id is None:
-        album_id = create_album_on_google(service, album_title)
+    with r.lock("find-album"):
+        album_id = find_album_on_google(album_title)
+        if album_id is None:
+            album_id = create_album_on_google(service, album_title)
 
     photo_data = get_photo_from_flickr(photo_url)
-
-    return upload_photo_to_google(google_creds, service, album_id, photo_data, photo_title)
+    return upload_photo_to_google(google_creds, service, album_id, photo_data,
+                                  photo_title, photo_tags)
