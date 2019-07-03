@@ -1,15 +1,17 @@
 import pickle
 import os
 import json
-
+import re
 
 def load_urls():
     urls = []
+    p = re.compile("https:[^']*")
     for file in os.listdir("celery/processed/"):
         if file.endswith(".msg"):
             with open(f"celery/processed/{file}") as celery_msg:
                 message = json.load(celery_msg)
-                url = message['headers']['argsrepr'].split(',')[1].replace(' ','').replace("'","")
+                r = p.search(message['headers']['argsrepr'])
+                url = r.group(0)
                 urls.append(url)
 
     return urls
@@ -28,6 +30,7 @@ def check_photoset(urls: list):
             if photo_url in urls:
                 found += 1
             else:
+                print(photo_url)
                 print(f"mv ./photosets-complete/{file} ./photosets/.")
                 not_found += 1
 
