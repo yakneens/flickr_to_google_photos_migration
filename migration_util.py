@@ -26,19 +26,6 @@ def find_album_on_google(album_title):
     return r.get(album_title)
 
 
-def build_album_cache(service):
-    albums = service.albums()
-    album_list_req = albums.list(pageSize=50, fields="nextPageToken,albums")
-    while album_list_req is not None:
-        album_list_resp = album_list_req.execute()
-        album_list = album_list_resp.get('albums', [])
-        for album in album_list:
-            if r.get(album['title']) is None:
-                r.set(album['title'], album['id'])
-
-        album_list_req = albums.list_next(album_list_req, album_list_resp)
-
-
 def create_album_on_google(service, album_title):
     albums = service.albums()
     new_album = albums.create(body={"album": {"title": album_title}}).execute()
@@ -84,7 +71,4 @@ def get_photo_from_flickr(photo_url):
     return BytesIO(photo_url_obj.read())
 
 
-if __name__ == '__main__':
-    creds = authorize_with_google()
-    service = get_google_photos_service(creds)
-    build_album_cache(service)
+
