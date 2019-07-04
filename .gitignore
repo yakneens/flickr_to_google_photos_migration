@@ -1,8 +1,10 @@
 auth/*
 photos_to_move.pickle
-celery/out/*
-celery/processed/*
-celery/results/*
+celery/
 __pycache__/*
 .idea/*
 google_test.py
+venv/
+flickr.sh
+photosets-complete/
+photosets-queue/

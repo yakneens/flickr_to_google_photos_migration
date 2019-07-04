@@ -26,6 +26,9 @@ mkdir auth
 mkir -p celery/out
 mkdir -p celery/processed
 mkdir -p celery/results 
+mkdir -p photosets
+mkdir -p photosets-complete
+mkdir -p photosets-queue
 ```
 
 ### Authentication and Authorization
@@ -58,10 +61,17 @@ that looks like this:
 
 Place this file under ```auth/google_credentials.json```
 
-Because one can have many thousands of photos in their library and errors may occur when communicating with either
-Flickr or Google Photos, we will carry out the migration process in several steps so that it can be restarted if it fails.
+Now that Google authentication is complete, setup Google authorization by running the [oauth.py](oauth.py) script:
+
+    python oauth.py
+    
+An authorization server page will be opened in your default browser.  Follow the prompts to grant the migration
+script access to your photos.  When successful, an additional file, ```auth/google_token.json``` will be created.
 
 ### Building a list of photos to migrate
+
+Because one can have many thousands of photos in their library and errors may occur when communicating with either
+Flickr or Google Photos, we will carry out the migration process in several steps so that it can be restarted if it fails.
 
 The first step is to build a file containing a list of URLs and titles of all your photos, as well as the album they 
 belong to. These scripts currently assume that all of your photos are stored in albums. They walk through all of your
@@ -78,13 +88,29 @@ export FLICKR_API_SECRET=my_secret
 python build_migration_photos_list.py
 ```
 
-This script walks through all the albums and builds a big list of photos that we will later use to download these photos
-and upload them to Google. At the end the script will write a file called ```photos_to_move.pickle``` with the results.
-One current limitation is that this script is a one shot deal, i.e. it needs to succeed in its entirety to write the 
-list of photos. If the script fails, it will need to start over. Perhaps in a later version there will be resume
-capability. Since the script doesn't actually download any data, but only builds a list of photo URLs, there is a
-reasonable expectation that it should succeed even on a large library of photos (tested on tens of thousands of photos).
+This script walks through all the albums and builds a list of photos that we will later use to download these photos
+and upload them to Google.  If available, tags on the photo in Flickr will be used as the description of the photo in 
+Google, otherwise the title in Flickr is used as the description.
 
+To make the process restartable, we'll use Redis to record the albums that have been retrieved from Flickr.  
+Fire up your own redis instance using docker:
+
+```bash
+docker run --name my-redis -p 6379:6379 --restart always --detach redis
+```
+
+For each album, a file named `photosets-queue/photoset-${album-id}-${# of photos}.pickle` will be created and an entry
+will be added to Redis to record that the album has been retrieved.  If the script should fail, simply restart it.
+It will skip all of the albums that have previously been downloaded.
+
+### Creating album cache
+To speed up the process of identifying albums in Google, a local cache of Google album titles will created.
+
+```bash
+python create_album_cache.py
+```
+
+This will find all of the existing albums in Google and create an entry in Redis.
 
 ### Creating migration tasks
 To manage the orderly download/upload of photos between providers, and allow one to stop and resume the process we will
@@ -96,20 +122,19 @@ if desired). We will create a bunch of tasks and then spin up one celery worker 
 without any parallelization. If you wish to experiment with parallel execution it is easy enough to do, but I'm not sure
 what throttling rules Flickr and Google place on their APIs.
 
-We generate the tasks by running: 
+Move one or more of the pickle files in `photosets-queue/` to `photosets/` 
+
+```bash
+mv photosets-queue/*.pickle photoests/
+```
+
+and generate tasks by running:
 
 ```python create_migration_tasks.py``` 
 
-This script will read the ```photos_to_move.pickle```
-file and create a separate Celery task for each photo. The tasks end up as files inside the ```celery/out``` folder.
-A task's job is to migrate a single photo from Flickr to Google Photos. It will take the name of the Flickr album that
-the photo is in and will try to locate the album with the same name on Google Photos. If it does not exist, the album
-will be created. Note, that a current limitation of the Google Photos API prevents searching for albums by name (which 
-means every time we have to retrieve and iterate through all albums), and prevents an application from uploading photos
-to an album that it did not create. Thus, you shouldn't have any existing albums in your Google Photos that conflict by
-name with albums on Flickr, otherwise there will be a collision and photos may not get uploaded. Once a suitable album
-is located on the Google side, the task will download a photo from Flickr using its "Original" size and will upload
-it to the respective album on Google Photos.
+This script will read the pickle files in ```photosets/*.pickle``` directory and create a separate Celery task for each photo.
+The tasks end up as files inside the ```celery/out``` folder.  A task's job is to migrate a single photo from Flickr to Google Photos. 
+
 
 ### Running the migration
 
@@ -149,4 +174,5 @@ welcome.
 
 
 ##### Support on Beerpay
-[![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/badge.svg?style=beer-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration)  [![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/make-wish.svg?style=flat-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration?focus=wish)
+[![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/badge.svg?style=beer-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration)
+[![Beerpay](https://beerpay.io/llevar/flickr_to_google_photos_migration/make-wish.svg?style=flat-square)](https://beerpay.io/llevar/flickr_to_google_photos_migration?focus=wish)

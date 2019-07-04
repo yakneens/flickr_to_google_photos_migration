@@ -9,3 +9,4 @@ celery
 tornado>=4.2.0,<6.0.0
 flickr-api
 pandas
+redis
