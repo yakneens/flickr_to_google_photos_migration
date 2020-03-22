@@ -125,7 +125,7 @@ what throttling rules Flickr and Google place on their APIs.
 Move one or more of the pickle files in `photosets-queue/` to `photosets/` 
 
 ```bash
-mv photosets-queue/*.pickle photoests/
+mv photosets-queue/*.pickle photosets/
 ```
 
 and generate tasks by running:
