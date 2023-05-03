@@ -23,7 +23,7 @@ You now want to create some necessary directories:
 
 ```shell
 mkdir auth
-mkir -p celery/out
+mkdir -p celery/out
 mkdir -p celery/processed
 mkdir -p celery/results 
 mkdir -p photosets
